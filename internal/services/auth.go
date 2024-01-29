@@ -22,9 +22,24 @@ func NewAuthService() *AuthService {
 }
 
 func (s *AuthService) SignUp(u *models.User) (int64, error) {
+	// check is email is valid
 	_, err := mail.ParseAddress(u.Email)
 	if err != nil {
 		return 0, errors.New("EMAIL IS INVALID")
+	}
+
+	// check password is valid
+	// password has not contain space
+	if utils.IsContainSpace(u.Password) {
+		return 0, errors.New("PASSWORD HAS SPACE")
+	}
+	// password has contain number
+	if !utils.IsContainNumber(u.Password) {
+		return 0, errors.New("PASSWORD MUST CONTAIN NUMBER")
+	}
+	// password has contain capital letter
+	if !utils.IsContainCapitalLetter(u.Password) {
+		return 0, errors.New("PASSWORD MUST CONTAIN CAPITAL LETTER")
 	}
 
 	// hash password before store user
