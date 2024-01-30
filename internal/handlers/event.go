@@ -7,7 +7,6 @@ import (
 
 	"gin-rest-api.com/basic/internal/models"
 	"gin-rest-api.com/basic/internal/services"
-	"gin-rest-api.com/basic/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -69,28 +68,8 @@ func (e *EventHandler) GetEventById(ctx *gin.Context) {
 }
 
 func (e *EventHandler) CreateNewEvent(ctx *gin.Context) {
-	token := ctx.Request.Header.Get("Authorization")
-	if token == "" {
-		ctx.JSON(http.StatusUnauthorized, models.Response{
-			IsError: true,
-			Message: "Missing auth token",
-			Result:  nil,
-		})
-		return
-	}
-
-	userId, err := utils.VerifyToken(token)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, models.Response{
-			IsError: true,
-			Message: "Token is invalid: " + err.Error(),
-			Result:  nil,
-		})
-		return
-	}
-
 	var newEvent models.Event
-	err = ctx.ShouldBindJSON(&newEvent)
+	err := ctx.ShouldBindJSON(&newEvent)
 
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
@@ -101,6 +80,7 @@ func (e *EventHandler) CreateNewEvent(ctx *gin.Context) {
 		return
 	}
 
+	userId := ctx.GetInt64("userId")
 	newEvent.UserId = int(userId)
 	newEvent.DateTime = time.Now()
 

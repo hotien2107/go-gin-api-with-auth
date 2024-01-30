@@ -2,6 +2,7 @@ package api
 
 import (
 	"gin-rest-api.com/basic/internal/handlers"
+	"gin-rest-api.com/basic/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,8 +39,11 @@ func (a *API) initializeRoutes() {
 	{
 		apiEventV1.GET("/get-all", eventHandler.GetAllEvents)
 		apiEventV1.GET("/:id", eventHandler.GetEventById)
-		apiEventV1.POST("/create", eventHandler.CreateNewEvent)
-		apiEventV1.PUT("/:id", eventHandler.UpdateEvent)
-		apiEventV1.DELETE("/:id", eventHandler.DeleteEventByID)
+
+		apiEventV1Auth := apiAuthV1.Group("/")
+		apiEventV1Auth.Use(middlewares.Authenticate)
+		apiEventV1Auth.POST("/create", eventHandler.CreateNewEvent)
+		apiEventV1Auth.PUT("/:id", eventHandler.UpdateEvent)
+		apiEventV1Auth.DELETE("/:id", eventHandler.DeleteEventByID)
 	}
 }
