@@ -71,6 +71,9 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
+	// Set the token in a HTTP-only cookie
+	ctx.SetCookie("token", accessToken, 3600, "/", "localhost", true, true) // HttpOnly set to true
+
 	ctx.JSON(http.StatusOK, models.Response{
 		IsError: false,
 		Message: "Login success!",

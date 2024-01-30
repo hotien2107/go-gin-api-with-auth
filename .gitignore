@@ -9,7 +9,11 @@ bin/*
 # goop - go package manager
 .vendor
 
-
+# env
+.env
+.local.env
+.prod.env
+.beta.env
 
 #############################
 #  $ gibo Go JetBrains OSX  #
