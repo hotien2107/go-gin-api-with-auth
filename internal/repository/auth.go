@@ -55,3 +55,21 @@ func (*AuthRepository) GetHashPassByEmail(email string) (string, error) {
 
 	return hashPass, nil
 }
+
+func (*AuthRepository) GetUserIdByEmail(email string) (int64, error) {
+	// query string
+	query := `
+		SELECT id FROM users WHERE email = ?
+	`
+
+	row := db.DB.QueryRow(query, email)
+
+	var userId int64
+
+	err := row.Scan(&userId)
+	if err != nil {
+		return 0, errors.New("EMAIL IS NOT REGISTERED")
+	}
+
+	return userId, nil
+}

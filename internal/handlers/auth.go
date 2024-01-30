@@ -61,7 +61,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	err = h.services.Login(&user)
+	accessToken, err := h.services.Login(&user)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, models.Response{
 			IsError: true,
@@ -74,6 +74,8 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, models.Response{
 		IsError: false,
 		Message: "Login success!",
-		Result:  nil,
+		Result: gin.H{
+			"token": accessToken,
+		},
 	})
 }

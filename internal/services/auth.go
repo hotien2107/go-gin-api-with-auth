@@ -59,18 +59,29 @@ func (s *AuthService) SignUp(u *models.User) (int64, error) {
 	return eventId, nil
 }
 
-func (s *AuthService) Login(u *models.User) error {
+func (s *AuthService) Login(u *models.User) (string, error) {
 	// get password from email
 	hashPass, err := s.repo.GetHashPassByEmail(u.Email)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// check password
 	isValidPassword := utils.ComparePassword(u.Password, hashPass)
 	if !isValidPassword {
-		return errors.New("PASSWORD IS INVALID")
+		return "", errors.New("PASSWORD IS INVALID")
 	}
 
-	return nil
+	userId, err := s.repo.GetUserIdByEmail(u.Email)
+	if err != nil {
+		return "", err
+	}
+
+	//login success -> generate JWT token
+	tokenString, err := utils.GenerateToken(u.Email, userId)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
