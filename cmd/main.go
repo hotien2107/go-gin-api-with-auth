@@ -3,6 +3,7 @@ package main
 import (
 	"gin-rest-api.com/basic/internal/api"
 	"gin-rest-api.com/basic/internal/db"
+	"gin-rest-api.com/basic/pkg/cloudinary"
 )
 
 // @title           Swagger Example API
@@ -23,6 +24,7 @@ import (
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	db.InitDB()
+	cloudinary.Init()
 	api := api.NewAPI()
 
 	api.Start()
