@@ -22,15 +22,16 @@ func NewAPI() *API {
 }
 
 // Start initializes the API and starts the HTTP server.
-func (a *API) Start(port string) error {
+func (a *API) Start() error {
 	a.initializeRoutes()
-	return a.engine.Run(":" + port)
+	return a.engine.Run()
 }
 
 func (a *API) initializeRoutes() {
 	eventHandler := handlers.NewEventHandler()
 	authHandler := handlers.NewAuthHandler()
 
+	// swagger api
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	a.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
