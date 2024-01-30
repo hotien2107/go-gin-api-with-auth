@@ -1,9 +1,12 @@
 package api
 
 import (
+	"gin-rest-api.com/basic/cmd/docs"
 	"gin-rest-api.com/basic/internal/handlers"
 	"gin-rest-api.com/basic/internal/middlewares"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // API struct holds the Gin engine.
@@ -24,10 +27,12 @@ func (a *API) Start(port string) error {
 	return a.engine.Run(":" + port)
 }
 
-// initializeRoutes sets up the API routes.
 func (a *API) initializeRoutes() {
 	eventHandler := handlers.NewEventHandler()
 	authHandler := handlers.NewAuthHandler()
+
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	a.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	apiAuthV1 := a.engine.Group("/api/v1/")
 	{
@@ -36,12 +41,11 @@ func (a *API) initializeRoutes() {
 	}
 
 	apiEventV1 := a.engine.Group("/api/v1/event")
+	apiEventV1Auth := apiEventV1.Group("/")
+	apiEventV1Auth.Use(middlewares.Authenticate)
 	{
-		apiEventV1.GET("/get-all", eventHandler.GetAllEvents)
-		apiEventV1.GET("/:id", eventHandler.GetEventById)
-
-		apiEventV1Auth := apiAuthV1.Group("/")
-		apiEventV1Auth.Use(middlewares.Authenticate)
+		apiEventV1Auth.GET("/get-all", eventHandler.GetAllEvents)
+		apiEventV1Auth.GET("/:id", eventHandler.GetEventById)
 		apiEventV1Auth.POST("/create", eventHandler.CreateNewEvent)
 		apiEventV1Auth.PUT("/:id", eventHandler.UpdateEvent)
 		apiEventV1Auth.DELETE("/:id", eventHandler.DeleteEventByID)

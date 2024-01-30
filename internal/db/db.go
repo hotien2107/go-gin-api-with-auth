@@ -3,16 +3,18 @@ package db
 import (
 	"database/sql"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
 // Global variable that holds the database connection object
 var DB *sql.DB
 
+const postgresInfo = "user=postgres.obbzmgleelshmaficbrh password=Speedattack2107 host=aws-0-ap-southeast-1.pooler.supabase.com port=6543 dbname=postgres"
+
 // Initializes the database connection
 func InitDB() {
-	// Open a new SQLite database with the filename "api.db"
-	db, err := sql.Open("sqlite3", "api.db")
+	// Open a new database
+	db, err := sql.Open("postgres", postgresInfo)
 	if err != nil {
 		// If there is an error opening the database, panic with an error message
 		panic("Connect SQL DB fail " + err.Error())
@@ -29,6 +31,6 @@ func InitDB() {
 }
 
 func createTables() {
-	createEventsTable()
 	createUserTable()
+	createEventsTable()
 }

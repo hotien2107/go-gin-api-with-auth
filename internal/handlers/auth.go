@@ -18,6 +18,16 @@ func NewAuthHandler() *AuthHandler {
 	}
 }
 
+// SignUp godoc
+// @Summary Sign up a new user
+// @Description Create a new user account
+// @Tags Authentication
+// @Accept  json
+// @Produce  json
+// @Param signUpInput body models.User true "Sign up input"
+// @Success 200 {object} models.Response
+// @Failure 400 {object} models.Response
+// @Router /sign-up [post]
 func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	var newUser models.User
 	err := ctx.ShouldBindJSON(&newUser)
@@ -48,6 +58,15 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	})
 }
 
+// @Summary Login
+// @Description Logs user in and returns an access token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param input body models.User true "User credentials"
+// @Success 200 {object} models.Response
+// @Failure 401 {object} models.Response
+// @Router /auth/login [post]
 func (h *AuthHandler) Login(ctx *gin.Context) {
 	var user models.User
 	err := ctx.ShouldBindJSON(&user)
