@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net/http"
+	"strings"
 
 	"gin-rest-api.com/basic/internal/models"
 	"gin-rest-api.com/basic/pkg/utils"
@@ -18,6 +19,9 @@ func Authenticate(ctx *gin.Context) {
 		})
 		return
 	}
+
+	// remove bearer string
+	token = strings.Split(token, " ")[1]
 
 	userId, err := utils.VerifyToken(token)
 	if err != nil {

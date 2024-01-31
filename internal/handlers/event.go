@@ -80,8 +80,7 @@ func (e *EventHandler) CreateNewEvent(ctx *gin.Context) {
 		return
 	}
 
-	userId := ctx.GetInt64("userId")
-	newEvent.UserId = int(userId)
+	newEvent.UserId = ctx.GetInt64("userId")
 	newEvent.DateTime = time.Now()
 
 	newEventId, err := e.services.Save(&newEvent)

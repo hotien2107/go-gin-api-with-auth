@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"gin-rest-api.com/basic/internal/models"
 	"gin-rest-api.com/basic/internal/services"
@@ -43,10 +44,28 @@ func (h *FileHandler) Upload(ctx *gin.Context) {
 	defer file.Close()
 
 	fileName := ctx.Request.FormValue("fileName")
-	tagId := ctx.Request.FormValue("tagId")
-	tagName := "folder"
-	log.Printf("tagId is %v", tagId)
-	fileId, err := h.services.Upload(ctx, &file, fileName, tagName)
+	desc := ctx.Request.FormValue("description")
+	tagIdStr := ctx.Request.FormValue("tagId")
+	tagId, err := strconv.Atoi(tagIdStr)
+	if err != nil {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsError: true,
+			Message: "Cannot parse tagId: " + err.Error(),
+			Result:  nil,
+		})
+		return
+	}
+
+	userLogin := ctx.GetInt64("userId")
+
+	var fileInfo *models.File = &models.File{
+		Name:        fileName,
+		Description: desc,
+		DateTime:    time.Now(),
+		UserId:      userLogin,
+	}
+
+	err = h.services.Upload(ctx, &file, fileInfo, int64(tagId))
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsError: true,
@@ -55,18 +74,43 @@ func (h *FileHandler) Upload(ctx *gin.Context) {
 		})
 		return
 	}
-	// allEvents, err := s.services.GetAll()
-	// if err != nil {
-	// 	ctx.JSON(http.StatusOK, models.Response{
-	// 		IsError: true,
-	// 		Message: err.Error(),
-	// 		Result:  nil,
-	// 	})
-	// 	return
-	// }
+
 	ctx.JSON(http.StatusOK, models.Response{
 		IsError: false,
-		Message: "",
-		Result:  fileId,
+		Message: "Upload file success!",
+		Result:  nil,
+	})
+}
+
+func (h *FileHandler) CreateNewTag(ctx *gin.Context) {
+	var newTag models.Tag
+	err := ctx.ShouldBindJSON(&newTag)
+
+	if err != nil {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsError: true,
+			Message: err.Error(),
+			Result:  nil,
+		})
+		return
+	}
+
+	newTag.UserId = ctx.GetInt64("userId")
+	newTag.DateTime = time.Now()
+
+	err = h.services.CreateNewTag(&newTag)
+	if err != nil {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsError: true,
+			Message: err.Error(),
+			Result:  nil,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.Response{
+		IsError: false,
+		Message: "Create tag success",
+		Result:  nil,
 	})
 }

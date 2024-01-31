@@ -57,5 +57,6 @@ func (a *API) initializeRoutes() {
 	apiFileV1 := apiAuthV1.Group("/file")
 	{
 		apiFileV1.POST("/upload", fileHandler.Upload)
+		apiFileV1.POST("/add-tag", fileHandler.CreateNewTag)
 	}
 }

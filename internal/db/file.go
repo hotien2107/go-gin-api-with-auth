@@ -2,7 +2,7 @@ package db
 
 func createImageTable() {
 	createImagesTable := `
-		CREATE TABLE IF NOT EXISTS images (
+		CREATE TABLE IF NOT EXISTS files (
 			id SERIAL PRIMARY KEY,
 			name TEXT NOT NULL,
 			description TEXT,
@@ -15,7 +15,7 @@ func createImageTable() {
 
 	_, err := DB.Exec(createImagesTable)
 	if err != nil {
-		panic("Create images table fail: " + err.Error())
+		panic("Create files table fail: " + err.Error())
 	}
 
 	createTagsTable := `
@@ -34,17 +34,17 @@ func createImageTable() {
 	}
 
 	createImageTagTable := `
-		CREATE TABLE IF NOT EXISTS image_tag (
+		CREATE TABLE IF NOT EXISTS file_tag (
 			id SERIAL PRIMARY KEY,
 			imageId INTEGER NOT NULL,
 			tagId INTEGER NOT NULL,
-			FOREIGN KEY (imageId) REFERENCES images(id),
+			FOREIGN KEY (imageId) REFERENCES files(id),
 			FOREIGN KEY (tagId) REFERENCES tags(id)
 		);
 	`
 
 	_, err = DB.Exec(createImageTagTable)
 	if err != nil {
-		panic("Create image_tag table fail: " + err.Error())
+		panic("Create file_tag table fail: " + err.Error())
 	}
 }

@@ -18,13 +18,7 @@ func (*AuthRepository) SignUp(email string, password string) error {
 		INSERT INTO users(email, password) VALUES($1, $2)
 	`
 
-	stmt, err := db.DB.Prepare(query)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(email, password)
+	_, err := db.DB.Exec(query, email, password)
 	if err != nil {
 		return err
 	}
