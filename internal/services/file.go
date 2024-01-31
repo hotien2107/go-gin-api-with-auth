@@ -22,19 +22,26 @@ func NewFileService() *FileService {
 
 func (s *FileService) Upload(ctx *gin.Context, file *multipart.File, fileInfo *models.File, tagId int64) error {
 	// Get tag name from tagId
+	tag, err := s.repo.GetTagById(tagId)
+	if err != nil {
+		return err
+	}
 
 	// Store file in cloudinary
-	url, err := cloudinary.UploadFile(ctx, file, fileInfo.Name, "folder")
+	url, err := cloudinary.UploadFile(ctx, file, fileInfo.Name, tag.Name)
 	if err != nil {
 		return err
 	}
 	fileInfo.URL = url
 
 	// store file info into files table
-	err = s.repo.SaveFile(fileInfo)
+	fileId, err := s.repo.SaveFile(fileInfo)
+	if err != nil {
+		return err
+	}
 
 	// store file by tag
-
+	err = s.repo.CreateNewFileTag(fileId, tagId)
 	if err != nil {
 		return err
 	}

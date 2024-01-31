@@ -11,19 +11,22 @@ func NewFileRepository() *FileRepository {
 	return &FileRepository{}
 }
 
-func (*FileRepository) SaveFile(file *models.File) error {
+func (*FileRepository) SaveFile(file *models.File) (int64, error) {
 	//query string
 	query := `
 		INSERT INTO files(name, description, url, dateTime, userId)
 		VALUES ($1,$2, $3, $4, $5)
+		RETURNING id
 	`
 
-	_, err := db.DB.Exec(query, file.Name, file.Description, file.URL, file.DateTime, file.UserId)
+	var fileId int64
+
+	err := db.DB.QueryRow(query, file.Name, file.Description, file.URL, file.DateTime, file.UserId).Scan(&fileId)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return fileId, nil
 }
 
 func (*FileRepository) CreateNewTag(tag *models.Tag) error {
@@ -34,6 +37,39 @@ func (*FileRepository) CreateNewTag(tag *models.Tag) error {
 	`
 
 	_, err := db.DB.Exec(query, tag.Name, tag.DateTime, tag.UserId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*FileRepository) GetTagById(tagId int64) (*models.Tag, error) {
+	// query string
+	query := `
+		SELECT * FROM tags
+		WHERE id= $1
+	`
+
+	row := db.DB.QueryRow(query, tagId)
+
+	var tag models.Tag
+	err := row.Scan(&tag.ID, &tag.Name, &tag.DateTime, &tag.UserId)
+	if err != nil {
+		return &models.Tag{}, err
+	}
+
+	return &tag, nil
+}
+
+func (*FileRepository) CreateNewFileTag(fileId int64, tagId int64) error {
+	//query string
+	query := `
+		INSERT INTO file_tag(fileId, tagId)
+		VALUES ($1, $2)
+	`
+
+	_, err := db.DB.Exec(query, fileId, tagId)
 	if err != nil {
 		return err
 	}

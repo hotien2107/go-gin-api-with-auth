@@ -36,9 +36,9 @@ func createImageTable() {
 	createImageTagTable := `
 		CREATE TABLE IF NOT EXISTS file_tag (
 			id SERIAL PRIMARY KEY,
-			imageId INTEGER NOT NULL,
+			fileId INTEGER NOT NULL,
 			tagId INTEGER NOT NULL,
-			FOREIGN KEY (imageId) REFERENCES files(id),
+			FOREIGN KEY (fileId) REFERENCES files(id),
 			FOREIGN KEY (tagId) REFERENCES tags(id)
 		);
 	`
