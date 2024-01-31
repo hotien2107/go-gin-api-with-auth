@@ -30,25 +30,32 @@ func (a *API) Start() error {
 func (a *API) initializeRoutes() {
 	eventHandler := handlers.NewEventHandler()
 	authHandler := handlers.NewAuthHandler()
+	fileHandler := handlers.NewFileHandler()
 
 	// swagger api
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	a.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	apiAuthV1 := a.engine.Group("/api/v1/")
+	apiV1 := a.engine.Group("/api/v1/")
 	{
-		apiAuthV1.POST("/sign-up", authHandler.SignUp)
-		apiAuthV1.POST("/login", authHandler.Login)
+		apiV1.POST("/sign-up", authHandler.SignUp)
+		apiV1.POST("/login", authHandler.Login)
 	}
 
-	apiEventV1 := a.engine.Group("/api/v1/event")
-	apiEventV1Auth := apiEventV1.Group("/")
-	apiEventV1Auth.Use(middlewares.Authenticate)
+	apiAuthV1 := apiV1.Group("/")
+	apiAuthV1.Use(middlewares.Authenticate)
+
+	apiEventV1 := apiAuthV1.Group("/event")
 	{
-		apiEventV1Auth.GET("/get-all", eventHandler.GetAllEvents)
-		apiEventV1Auth.GET("/:id", eventHandler.GetEventById)
-		apiEventV1Auth.POST("/create", eventHandler.CreateNewEvent)
-		apiEventV1Auth.PUT("/:id", eventHandler.UpdateEvent)
-		apiEventV1Auth.DELETE("/:id", eventHandler.DeleteEventByID)
+		apiEventV1.GET("/get-all", eventHandler.GetAllEvents)
+		apiEventV1.GET("/:id", eventHandler.GetEventById)
+		apiEventV1.POST("/create", eventHandler.CreateNewEvent)
+		apiEventV1.PUT("/:id", eventHandler.UpdateEvent)
+		apiEventV1.DELETE("/:id", eventHandler.DeleteEventById)
+	}
+
+	apiFileV1 := apiAuthV1.Group("/file")
+	{
+		apiFileV1.POST("/upload", fileHandler.Upload)
 	}
 }

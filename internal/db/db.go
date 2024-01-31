@@ -26,7 +26,7 @@ func InitDB() {
 	}
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
+		"password=%s dbname=%s binary_parameters=yes",
 		host, port, user, password, dbName)
 
 	// Open a new database

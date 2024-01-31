@@ -41,7 +41,7 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	newUserId, err := h.services.SignUp(&newUser)
+	err = h.services.SignUp(&newUser)
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsError: true,
@@ -54,7 +54,7 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, models.Response{
 		IsError: false,
 		Message: "Sign up success",
-		Result:  newUserId,
+		Result:  nil,
 	})
 }
 

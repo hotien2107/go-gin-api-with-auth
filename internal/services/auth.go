@@ -21,42 +21,42 @@ func NewAuthService() *AuthService {
 	}
 }
 
-func (s *AuthService) SignUp(u *models.User) (int64, error) {
+func (s *AuthService) SignUp(u *models.User) error {
 	// check is email is valid
 	_, err := mail.ParseAddress(u.Email)
 	if err != nil {
-		return 0, errors.New("EMAIL IS INVALID")
+		return errors.New("EMAIL IS INVALID")
 	}
 
 	// check password is valid
 	// password has not contain space
 	if utils.IsContainSpace(u.Password) {
-		return 0, errors.New("PASSWORD HAS SPACE")
+		return errors.New("PASSWORD HAS SPACE")
 	}
 	// password has contain number
 	if !utils.IsContainNumber(u.Password) {
-		return 0, errors.New("PASSWORD MUST CONTAIN NUMBER")
+		return errors.New("PASSWORD MUST CONTAIN NUMBER")
 	}
 	// password has contain capital letter
 	if !utils.IsContainCapitalLetter(u.Password) {
-		return 0, errors.New("PASSWORD MUST CONTAIN CAPITAL LETTER")
+		return errors.New("PASSWORD MUST CONTAIN CAPITAL LETTER")
 	}
 
 	// hash password before store user
 	hashPass, err := utils.HashPassword(u.Password)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	log.Println(s)
 
-	eventId, err := s.repo.SignUp(u.Email, hashPass)
+	err = s.repo.SignUp(u.Email, hashPass)
 
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return eventId, nil
+	return nil
 }
 
 func (s *AuthService) Login(u *models.User) (string, error) {

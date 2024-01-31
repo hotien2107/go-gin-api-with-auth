@@ -142,7 +142,7 @@ func (e *EventHandler) UpdateEvent(ctx *gin.Context) {
 	})
 }
 
-func (e *EventHandler) DeleteEventByID(ctx *gin.Context) {
+func (e *EventHandler) DeleteEventById(ctx *gin.Context) {
 	eventIdStr := ctx.Param("id")
 	eventId, err := strconv.ParseInt(eventIdStr, 10, 64)
 	if err != nil {

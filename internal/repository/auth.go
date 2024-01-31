@@ -12,36 +12,30 @@ func NewAuthRepository() *AuthRepository {
 	return &AuthRepository{}
 }
 
-func (*AuthRepository) SignUp(email string, password string) (int64, error) {
+func (*AuthRepository) SignUp(email string, password string) error {
 	// query string
 	query := `
-		INSERT INTO users(email, password)
-		VALUES (?, ?)
+		INSERT INTO users(email, password) VALUES($1, $2)
 	`
 
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(email, password)
+	_, err = stmt.Exec(email, password)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	eventId, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return eventId, nil
+	return nil
 }
 
 func (*AuthRepository) GetHashPassByEmail(email string) (string, error) {
 	// query string
 	query := `
-		SELECT password FROM users WHERE email = ?
+		SELECT password FROM users WHERE email = $1
 	`
 
 	row := db.DB.QueryRow(query, email)
@@ -50,7 +44,7 @@ func (*AuthRepository) GetHashPassByEmail(email string) (string, error) {
 
 	err := row.Scan(&hashPass)
 	if err != nil {
-		return "", errors.New("EMAIL IS NOT REGISTERED")
+		return "", errors.New("GET PASSWORD FROM EMAIL FAILED: " + err.Error())
 	}
 
 	return hashPass, nil
@@ -59,7 +53,7 @@ func (*AuthRepository) GetHashPassByEmail(email string) (string, error) {
 func (*AuthRepository) GetUserIdByEmail(email string) (int64, error) {
 	// query string
 	query := `
-		SELECT id FROM users WHERE email = ?
+		SELECT id FROM users WHERE email = $1
 	`
 
 	row := db.DB.QueryRow(query, email)
@@ -68,7 +62,7 @@ func (*AuthRepository) GetUserIdByEmail(email string) (int64, error) {
 
 	err := row.Scan(&userId)
 	if err != nil {
-		return 0, errors.New("EMAIL IS NOT REGISTERED")
+		return 0, errors.New("GET USER ID FROM EMAIL FAILED: " + err.Error())
 	}
 
 	return userId, nil
