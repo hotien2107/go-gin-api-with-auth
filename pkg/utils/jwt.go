@@ -10,11 +10,18 @@ import (
 const secretKey = "secretkey"
 
 // Function generate new Token
-func GenerateToken(email string, userId int64) (string, error) {
+func GenerateToken(email string, userId int64, isRefreshToken bool) (string, error) {
+	var expiredTime int64
+	if isRefreshToken {
+		expiredTime = time.Now().Add(time.Hour * 8760).Unix() // 1 year
+	} else {
+		expiredTime = time.Now().Add(time.Hour).Unix() // 1 hour
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email":  email,
 		"userId": userId,
-		"exp":    time.Now().Add(time.Hour).Unix(), // expired time is 1 hour
+		"exp":    expiredTime,
 	})
 
 	accessToken, err := token.SignedString([]byte(secretKey))

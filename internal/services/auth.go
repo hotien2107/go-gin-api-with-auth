@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"log"
 	"net/mail"
 
 	"gin-rest-api.com/basic/internal/models"
@@ -48,8 +47,6 @@ func (s *AuthService) SignUp(u *models.User) error {
 		return err
 	}
 
-	log.Println(s)
-
 	err = s.repo.SignUp(u.Email, hashPass)
 
 	if err != nil {
@@ -59,29 +56,39 @@ func (s *AuthService) SignUp(u *models.User) error {
 	return nil
 }
 
-func (s *AuthService) Login(u *models.User) (string, error) {
+/*
+Login function
+Input: email, password
+Output: accessToken, refreshToken, error
+*/
+func (s *AuthService) Login(u *models.User) (string, string, error) {
 	// get password from email
 	hashPass, err := s.repo.GetHashPassByEmail(u.Email)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	// check password
 	isValidPassword := utils.ComparePassword(u.Password, hashPass)
 	if !isValidPassword {
-		return "", errors.New("PASSWORD IS INVALID")
+		return "", "", errors.New("PASSWORD IS INVALID")
 	}
 
 	userId, err := s.repo.GetUserIdByEmail(u.Email)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	//login success -> generate JWT token
-	tokenString, err := utils.GenerateToken(u.Email, userId)
+	accessTokenString, err := utils.GenerateToken(u.Email, userId, false)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return tokenString, nil
+	refreshTokenString, err := utils.GenerateToken(u.Email, userId, true)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessTokenString, refreshTokenString, nil
 }

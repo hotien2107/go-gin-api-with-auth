@@ -18,16 +18,6 @@ func NewAuthHandler() *AuthHandler {
 	}
 }
 
-// SignUp godoc
-// @Summary Sign up a new user
-// @Description Create a new user account
-// @Tags Authentication
-// @Accept  json
-// @Produce  json
-// @Param signUpInput body models.User true "Sign up input"
-// @Success 200 {object} models.Response
-// @Failure 400 {object} models.Response
-// @Router /sign-up [post]
 func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	var newUser models.User
 	err := ctx.ShouldBindJSON(&newUser)
@@ -58,15 +48,6 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	})
 }
 
-// @Summary Login
-// @Description Logs user in and returns an access token
-// @Tags Authentication
-// @Accept json
-// @Produce json
-// @Param input body models.User true "User credentials"
-// @Success 200 {object} models.Response
-// @Failure 401 {object} models.Response
-// @Router /auth/login [post]
 func (h *AuthHandler) Login(ctx *gin.Context) {
 	var user models.User
 	err := ctx.ShouldBindJSON(&user)
@@ -80,7 +61,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, err := h.services.Login(&user)
+	accessToken, refreshToken, err := h.services.Login(&user)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, models.Response{
 			IsError: true,
@@ -90,8 +71,8 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	// Set the token in a HTTP-only cookie
-	ctx.SetCookie("token", accessToken, 3600, "/", "localhost", true, true) // HttpOnly set to true
+	// Set the token in a HTTP-only cookie, expTime is 1 year
+	ctx.SetCookie("refresh-token", refreshToken, 31536000, "/", "localhost", true, true) // HttpOnly set to true
 
 	ctx.JSON(http.StatusOK, models.Response{
 		IsError: false,
