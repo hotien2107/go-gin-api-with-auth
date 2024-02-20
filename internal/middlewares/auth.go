@@ -23,7 +23,7 @@ func Authenticate(ctx *gin.Context) {
 	// remove bearer string
 	token = strings.Split(token, " ")[1]
 
-	userId, err := utils.VerifyToken(token)
+	_, userId, err := utils.VerifyToken(token)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, models.Response{
 			IsError: true,

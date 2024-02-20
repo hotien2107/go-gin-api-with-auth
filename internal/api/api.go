@@ -1,12 +1,9 @@
 package api
 
 import (
-	"gin-rest-api.com/basic/cmd/docs"
 	"gin-rest-api.com/basic/internal/handlers"
 	"gin-rest-api.com/basic/internal/middlewares"
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // API struct holds the Gin engine.
@@ -32,14 +29,11 @@ func (a *API) initializeRoutes() {
 	authHandler := handlers.NewAuthHandler()
 	fileHandler := handlers.NewFileHandler()
 
-	// swagger api
-	docs.SwaggerInfo.BasePath = "/api/v1"
-	a.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-
 	apiV1 := a.engine.Group("/api/v1/")
 	{
 		apiV1.POST("/sign-up", authHandler.SignUp)
 		apiV1.POST("/login", authHandler.Login)
+		apiV1.POST("/gen-new-token", authHandler.GenNewAccessToken)
 	}
 
 	apiAuthV1 := apiV1.Group("/")

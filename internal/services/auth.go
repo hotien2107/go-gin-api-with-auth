@@ -92,3 +92,24 @@ func (s *AuthService) Login(u *models.User) (string, string, error) {
 
 	return accessTokenString, refreshTokenString, nil
 }
+
+func (s *AuthService) GenNewAccessToken(refreshToken string) (string, error) {
+
+	// validate refresh token
+	if refreshToken == "" {
+
+		return "", errors.New("MISSING REFRESH TOKEN")
+	}
+	email, userId, err := utils.VerifyToken(refreshToken)
+	if err != nil {
+		return "", errors.New("REFRESH TOKEN IS INVALID: " + err.Error())
+	}
+
+	// generate new access token
+	accessToken, err := utils.GenerateToken(email, userId, false)
+	if err != nil {
+		return "", errors.New("Generate access token failed: " + err.Error())
+	}
+
+	return accessToken, nil
+}

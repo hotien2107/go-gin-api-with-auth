@@ -33,8 +33,8 @@ func GenerateToken(email string, userId int64, isRefreshToken bool) (string, err
 }
 
 // VerifyToken is a function that checks the validity of a JWT token
-// return userId & errors
-func VerifyToken(token string) (int64, error) {
+// return email, userId & errors
+func VerifyToken(token string) (string, int64, error) {
 	// Initialize a new JWT parser with the given token
 	parser, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		// Verify if the token's signing method is HMAC
@@ -48,19 +48,19 @@ func VerifyToken(token string) (int64, error) {
 
 	if err != nil {
 		// If there was an error parsing the token, return an error
-		return 0, errors.New("Cannot parse token: " + err.Error())
+		return "", 0, errors.New("Cannot parse token: " + err.Error())
 	}
 
 	// Check if the token is valid
 	tokenIsValid := parser.Valid
 	if !tokenIsValid {
-		return 0, errors.New("TOKEN IS INVALID")
+		return "", 0, errors.New("TOKEN IS INVALID")
 	}
 
 	// Type assert the token's claims to jwt.MapClaims
 	claims, ok := parser.Claims.(jwt.MapClaims)
 	if !ok {
-		return 0, errors.New("INVALID TOKEN CLAIMS")
+		return "", 0, errors.New("INVALID TOKEN CLAIMS")
 	}
 
 	// Check if the token has expired
@@ -68,14 +68,19 @@ func VerifyToken(token string) (int64, error) {
 		unixTime := claims["exp"].(float64)
 		currentTime := time.Now().Unix()
 		if currentTime > int64(unixTime) {
-			return 0, errors.New("TOKEN HAS EXPIRED")
+			return "", 0, errors.New("TOKEN HAS EXPIRED")
 		}
 	}
 
 	userId, ok := claims["userId"].(float64)
 	if !ok {
-		return 0, errors.New("CANNOT GET USER ID IN TOKEN")
+		return "", 0, errors.New("CANNOT GET USER ID IN TOKEN")
 	}
 
-	return int64(userId), nil
+	email, ok := claims["email"].(string)
+	if !ok {
+		return "", 0, errors.New("CANNOT GET USER ID IN TOKEN")
+	}
+
+	return email, int64(userId), nil
 }

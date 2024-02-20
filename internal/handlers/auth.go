@@ -82,3 +82,35 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		},
 	})
 }
+
+func (h *AuthHandler) GenNewAccessToken(ctx *gin.Context) {
+	// get refresh token from cookies
+	refreshToken, err := ctx.Cookie("refresh-token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, models.Response{
+			IsError: true,
+			Message: err.Error(),
+			Result:  nil,
+		})
+		return
+	}
+
+	newAccessToken, err := h.services.GenNewAccessToken(refreshToken)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, models.Response{
+			IsError: true,
+			Message: err.Error(),
+			Result:  nil,
+		})
+		return
+	}
+
+	// return new access token
+	ctx.JSON(http.StatusOK, models.Response{
+		IsError: false,
+		Message: "Generate new access token success!",
+		Result: gin.H{
+			"token": newAccessToken,
+		},
+	})
+}
