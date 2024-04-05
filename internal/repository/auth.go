@@ -3,22 +3,26 @@ package repository
 import (
 	"errors"
 
-	"gin-rest-api.com/basic/internal/db"
+	"gin-rest-api.com/basic/internal/db/postgres"
 )
 
-type AuthRepository struct{}
-
-func NewAuthRepository() *AuthRepository {
-	return &AuthRepository{}
+type AuthRepository struct {
+	*postgres.PsqlDB
 }
 
-func (*AuthRepository) SignUp(email string, password string) error {
+func NewAuthRepository() *AuthRepository {
+	return &AuthRepository{
+		postgres.NewPsqlDB(),
+	}
+}
+
+func (r *AuthRepository) SignUp(email string, password string) error {
 	// query string
 	query := `
 		INSERT INTO users(email, password) VALUES($1, $2)
 	`
 
-	_, err := db.DB.Exec(query, email, password)
+	_, err := r.DB.Exec(query, email, password)
 	if err != nil {
 		return err
 	}
@@ -26,13 +30,13 @@ func (*AuthRepository) SignUp(email string, password string) error {
 	return nil
 }
 
-func (*AuthRepository) GetHashPassByEmail(email string) (string, error) {
+func (r *AuthRepository) GetHashPassByEmail(email string) (string, error) {
 	// query string
 	query := `
 		SELECT password FROM users WHERE email = $1
 	`
 
-	row := db.DB.QueryRow(query, email)
+	row := r.DB.QueryRow(query, email)
 
 	var hashPass string
 
@@ -44,13 +48,13 @@ func (*AuthRepository) GetHashPassByEmail(email string) (string, error) {
 	return hashPass, nil
 }
 
-func (*AuthRepository) GetUserIdByEmail(email string) (int64, error) {
+func (r *AuthRepository) GetUserIdByEmail(email string) (int64, error) {
 	// query string
 	query := `
 		SELECT id FROM users WHERE email = $1
 	`
 
-	row := db.DB.QueryRow(query, email)
+	row := r.DB.QueryRow(query, email)
 
 	var userId int64
 

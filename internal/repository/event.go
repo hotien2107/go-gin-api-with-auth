@@ -1,23 +1,27 @@
 package repository
 
 import (
-	"gin-rest-api.com/basic/internal/db"
+	"gin-rest-api.com/basic/internal/db/postgres"
 	"gin-rest-api.com/basic/internal/models"
 )
 
-type EventRepository struct{}
-
-func NewEventRepository() *EventRepository {
-	return &EventRepository{}
+type EventRepository struct {
+	*postgres.PsqlDB
 }
 
-func (*EventRepository) GetAll() ([]models.Event, error) {
+func NewEventRepository() *EventRepository {
+	return &EventRepository{
+		postgres.NewPsqlDB(),
+	}
+}
+
+func (r *EventRepository) GetAll() ([]models.Event, error) {
 	// query string
 	query := `
 		SELECT * FROM events
 	`
 
-	rows, err := db.DB.Query(query)
+	rows, err := r.DB.Query(query)
 	if err != nil {
 		return []models.Event{}, err
 	}
@@ -37,14 +41,14 @@ func (*EventRepository) GetAll() ([]models.Event, error) {
 	return events, nil
 }
 
-func (*EventRepository) GetById(eventID int64) (models.Event, error) {
+func (r *EventRepository) GetById(eventID int64) (models.Event, error) {
 	// query string
 	query := `
 		SELECT * FROM events
 		WHERE id=?
 	`
 
-	row := db.DB.QueryRow(query, eventID)
+	row := r.DB.QueryRow(query, eventID)
 
 	var event models.Event
 	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserId)
@@ -55,14 +59,14 @@ func (*EventRepository) GetById(eventID int64) (models.Event, error) {
 	return event, nil
 }
 
-func (*EventRepository) Save(event *models.Event) (int64, error) {
+func (r *EventRepository) Save(event *models.Event) (int64, error) {
 	//query string
 	query := `
 		INSERT INTO events(name, description, location, dateTime, userId)
 		VALUES (?, ?, ?, ?, ?)
 	`
 
-	stmt, err := db.DB.Prepare(query)
+	stmt, err := r.DB.Prepare(query)
 	if err != nil {
 		return 0, err
 	}
@@ -81,7 +85,7 @@ func (*EventRepository) Save(event *models.Event) (int64, error) {
 	return eventId, nil
 }
 
-func (*EventRepository) Update(event *models.Event) error {
+func (r *EventRepository) Update(event *models.Event) error {
 	//query string
 	query := `
 		UPDATE events
@@ -89,7 +93,7 @@ func (*EventRepository) Update(event *models.Event) error {
 		WHERE id = ?
 	`
 
-	stmt, err := db.DB.Prepare(query)
+	stmt, err := r.DB.Prepare(query)
 	if err != nil {
 		return err
 	}
@@ -103,14 +107,14 @@ func (*EventRepository) Update(event *models.Event) error {
 	return nil
 }
 
-func (*EventRepository) Delete(eventId int64) error {
+func (r *EventRepository) Delete(eventId int64) error {
 	//query string
 	query := `
 		DELETE FROM events
 		WHERE id = ?
 	`
 
-	stmt, err := db.DB.Prepare(query)
+	stmt, err := r.DB.Prepare(query)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,6 @@
-package db
+package postgres
 
-func createImageTable() {
+func (psqlDB *PsqlDB) createImageTable() {
 	createImagesTable := `
 		CREATE TABLE IF NOT EXISTS files (
 			id SERIAL PRIMARY KEY,
@@ -13,7 +13,7 @@ func createImageTable() {
 		);
 	`
 
-	_, err := DB.Exec(createImagesTable)
+	_, err := psqlDB.DB.Exec(createImagesTable)
 	if err != nil {
 		panic("Create files table fail: " + err.Error())
 	}
@@ -28,7 +28,7 @@ func createImageTable() {
 		);
 	`
 
-	_, err = DB.Exec(createTagsTable)
+	_, err = psqlDB.DB.Exec(createTagsTable)
 	if err != nil {
 		panic("Create tags table fail: " + err.Error())
 	}
@@ -43,7 +43,7 @@ func createImageTable() {
 		);
 	`
 
-	_, err = DB.Exec(createImageTagTable)
+	_, err = psqlDB.DB.Exec(createImageTagTable)
 	if err != nil {
 		panic("Create file_tag table fail: " + err.Error())
 	}

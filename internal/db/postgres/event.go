@@ -1,6 +1,6 @@
-package db
+package postgres
 
-func createEventsTable() {
+func (psqlDB *PsqlDB) createEventsTable() {
 	createEventsTable := `
 		CREATE TABLE IF NOT EXISTS events (
 			id SERIAL PRIMARY KEY,
@@ -13,7 +13,7 @@ func createEventsTable() {
 		);
 	`
 
-	_, err := DB.Exec(createEventsTable)
+	_, err := psqlDB.DB.Exec(createEventsTable)
 	if err != nil {
 		panic("Create events table fail: " + err.Error())
 	}

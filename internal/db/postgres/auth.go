@@ -1,6 +1,6 @@
-package db
+package postgres
 
-func createUserTable() {
+func (psqlDB *PsqlDB) createUserTable() {
 	createUserTable := `
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,
@@ -9,7 +9,7 @@ func createUserTable() {
 		);	
 	`
 
-	_, err := DB.Exec(createUserTable)
+	_, err := psqlDB.DB.Exec(createUserTable)
 
 	if err != nil {
 		panic("Create users table fail " + err.Error())
