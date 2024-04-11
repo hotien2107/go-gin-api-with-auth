@@ -28,6 +28,7 @@ func (a *API) initializeRoutes() {
 	eventHandler := handlers.NewEventHandler()
 	authHandler := handlers.NewAuthHandler()
 	fileHandler := handlers.NewFileHandler()
+	messageHandler := handlers.NewMessageHandler()
 
 	apiV1 := a.engine.Group("/api/v1/")
 	{
@@ -52,5 +53,10 @@ func (a *API) initializeRoutes() {
 	{
 		apiFileV1.POST("/upload", fileHandler.Upload)
 		apiFileV1.POST("/add-tag", fileHandler.CreateNewTag)
+	}
+
+	apiMessageV1 := apiAuthV1.Group("/message")
+	{
+		apiMessageV1.GET("/get-all", messageHandler.GetAllMessages)
 	}
 }

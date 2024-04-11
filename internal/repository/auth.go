@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"gin-rest-api.com/basic/internal/db/postgres"
 )
@@ -21,6 +22,8 @@ func (r *AuthRepository) SignUp(email string, password string) error {
 	query := `
 		INSERT INTO users(email, password) VALUES($1, $2)
 	`
+
+	fmt.Println("r.DB", r.DB)
 
 	_, err := r.DB.Exec(query, email, password)
 	if err != nil {
