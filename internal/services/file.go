@@ -14,7 +14,6 @@ type FileService struct {
 }
 
 func NewFileService() *FileService {
-	// Initialize and return a new UserService instance
 	return &FileService{
 		repo: repository.NewFileRepository(),
 	}

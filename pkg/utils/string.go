@@ -1,6 +1,9 @@
 package utils
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 // Function check string has contain number
 func IsContainNumber(str string) bool {
@@ -18,4 +21,14 @@ func IsContainCapitalLetter(str string) bool {
 func IsContainSpace(str string) bool {
 	spaceRegex := regexp.MustCompile(" ")
 	return spaceRegex.FindAllIndex([]byte(str), -1) != nil
+}
+
+// Function check string is empty
+func IsEmpty(str string) bool {
+	strFormat := strings.TrimSpace(str)
+
+	if len(strFormat) == 0 || strFormat == "" {
+		return true
+	}
+	return false
 }

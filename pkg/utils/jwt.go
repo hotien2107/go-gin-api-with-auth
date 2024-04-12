@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -83,4 +84,8 @@ func VerifyToken(token string) (string, int64, error) {
 	}
 
 	return email, int64(userId), nil
+}
+
+func GetUserId(ctx *gin.Context) int64 {
+	return ctx.MustGet("userId").(int64)
 }

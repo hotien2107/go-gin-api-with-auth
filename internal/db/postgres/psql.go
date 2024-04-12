@@ -24,7 +24,6 @@ func NewPsqlDB() *PsqlDB {
 
 // Initializes the database connection
 func (psqlDB *PsqlDB) InitPostgresSQL() {
-	fmt.Println("psqlDB", psqlDB)
 	host := os.Getenv("DB_HOST")
 	portStr := os.Getenv("DB_PORT")
 	user := os.Getenv("DB_USER")
@@ -67,4 +66,6 @@ func (psqlDB *PsqlDB) createTables() {
 	psqlDB.createUserTable()
 	psqlDB.createEventsTable()
 	psqlDB.createImageTable()
+	psqlDB.createRoomTable()
+	psqlDB.createParticipantTable()
 }

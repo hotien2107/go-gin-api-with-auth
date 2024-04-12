@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"gin-rest-api.com/basic/internal/models"
@@ -8,18 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type MessageHandler struct {
-	services *services.MessageService
+type RoomHandler struct {
+	services *services.RoomService
 }
 
-func NewMessageHandler() *MessageHandler {
-	return &MessageHandler{
-		services: services.NewMessageService(),
+func NewRoomHandler() *RoomHandler {
+	return &RoomHandler{
+		services: services.NewRoomService(),
 	}
 }
 
-func (h *MessageHandler) GetAlls(ctx *gin.Context) {
-	allEvents, err := h.services.GetAlls(ctx)
+func (h *RoomHandler) GetByUser(ctx *gin.Context) {
+	rooms, err := h.services.GetByUser(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsError: true,
@@ -28,16 +29,17 @@ func (h *MessageHandler) GetAlls(ctx *gin.Context) {
 		})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, models.Response{
-		IsError: false,
-		Message: "",
-		Result:  allEvents,
+		IsError: true,
+		Message: "Successfully fetched user's rooms",
+		Result:  rooms,
 	})
 }
 
-func (h *MessageHandler) Send(ctx *gin.Context) {
-	var newMess models.Message
-	err := ctx.ShouldBindJSON(&newMess)
+func (h *RoomHandler) Create(ctx *gin.Context) {
+	var newRoom models.Room
+	err := ctx.ShouldBindJSON(&newRoom)
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsError: true,
@@ -47,7 +49,7 @@ func (h *MessageHandler) Send(ctx *gin.Context) {
 		return
 	}
 
-	err = h.services.Send(ctx, &newMess)
+	roomId, err := h.services.Create(ctx, &newRoom)
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsError: true,
@@ -56,9 +58,10 @@ func (h *MessageHandler) Send(ctx *gin.Context) {
 		})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, models.Response{
 		IsError: false,
-		Message: "Send message successfully",
-		Result:  nil,
+		Message: "Create tag success",
+		Result:  "Room's id is: " + fmt.Sprintf("%d", roomId),
 	})
 }

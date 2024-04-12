@@ -49,5 +49,4 @@ func (mongoDB *MongoDB) InitMongodb() {
 	}
 
 	mongoDatabase = client.Database("chat-app")
-	fmt.Println("Connect to mongodb successfully!")
 }

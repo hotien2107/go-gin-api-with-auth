@@ -29,6 +29,7 @@ func (a *API) initializeRoutes() {
 	authHandler := handlers.NewAuthHandler()
 	fileHandler := handlers.NewFileHandler()
 	messageHandler := handlers.NewMessageHandler()
+	roomHandler := handlers.NewRoomHandler()
 
 	apiV1 := a.engine.Group("/api/v1/")
 	{
@@ -57,6 +58,14 @@ func (a *API) initializeRoutes() {
 
 	apiMessageV1 := apiAuthV1.Group("/message")
 	{
-		apiMessageV1.GET("/get-all", messageHandler.GetAllMessages)
+		apiMessageV1.GET("/get-all", messageHandler.GetAlls)
+		apiMessageV1.POST("/send", messageHandler.Send)
 	}
+
+	apiRoomV1 := apiAuthV1.Group("/room")
+	{
+		apiRoomV1.GET("/get-by-user", roomHandler.GetByUser)
+		apiRoomV1.POST("/create", roomHandler.Create)
+	}
+
 }

@@ -20,7 +20,7 @@ func NewMessageRepository() *MessageRepository {
 	}
 }
 
-func (r *MessageRepository) GetAllMessage(ctx *gin.Context, senderId int64) ([]models.Message, error) {
+func (r *MessageRepository) GetAll(ctx *gin.Context, senderId int64) ([]models.Message, error) {
 	var allMess []models.Message
 	cur, err := r.DB.Collection("messages").Find(ctx, bson.M{"sender_id": senderId})
 	if err != nil {
@@ -39,4 +39,12 @@ func (r *MessageRepository) GetAllMessage(ctx *gin.Context, senderId int64) ([]m
 
 	}
 	return allMess, nil
+}
+
+func (r *MessageRepository) Send(ctx *gin.Context, messInfo *models.Message) error {
+	_, err := r.DB.Collection("messages").InsertOne(ctx, messInfo)
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	return nil
 }
