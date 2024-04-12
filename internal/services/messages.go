@@ -34,15 +34,15 @@ func (s *MessageService) GetAlls(ctx *gin.Context) ([]models.Message, error) {
 func (s *MessageService) Send(ctx *gin.Context, messInfo *models.Message) error {
 	// validate input data
 	if messInfo.RoomId == 0 {
-		return errors.New("NO CONVERSATION YET")
+		return errors.New("no room yet")
 	}
 
 	if utils.IsEmpty(messInfo.Content) {
-		return errors.New("CONTENT IS EMPTY")
+		return errors.New("content must not empty")
 	}
 
 	if utils.IsEmpty(messInfo.Type) {
-		return errors.New("TYPE IS EMPTY")
+		return errors.New("type must not empty")
 	}
 
 	// format data

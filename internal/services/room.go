@@ -31,7 +31,7 @@ func (s *RoomService) GetByUser(ctx *gin.Context) (*[]models.Room, error) {
 func (s *RoomService) Create(ctx *gin.Context, room *models.Room) (int64, error) {
 	room.CreatedUser = utils.GetUserId(ctx)
 	if utils.IsEmpty(room.Name) {
-		return 0, errors.New("Room's name is not empty")
+		return 0, errors.New("room's name is not empty")
 	}
 	roomId, err := s.repo.Create(room)
 	if err != nil {

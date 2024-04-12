@@ -24,21 +24,21 @@ func (s *AuthService) SignUp(u *models.User) error {
 	// check is email is valid
 	_, err := mail.ParseAddress(u.Email)
 	if err != nil {
-		return errors.New("EMAIL IS INVALID")
+		return errors.New("email is invalid")
 	}
 
 	// check password is valid
 	// password has not contain space
 	if utils.IsContainSpace(u.Password) {
-		return errors.New("PASSWORD HAS SPACE")
+		return errors.New("password must not contain spaces")
 	}
 	// password has contain number
 	if !utils.IsContainNumber(u.Password) {
-		return errors.New("PASSWORD MUST CONTAIN NUMBER")
+		return errors.New("password must contain number")
 	}
 	// password has contain capital letter
 	if !utils.IsContainCapitalLetter(u.Password) {
-		return errors.New("PASSWORD MUST CONTAIN CAPITAL LETTER")
+		return errors.New("password must contain capital letter")
 	}
 
 	// hash password before store user
@@ -71,7 +71,7 @@ func (s *AuthService) Login(u *models.User) (string, string, error) {
 	// check password
 	isValidPassword := utils.ComparePassword(u.Password, hashPass)
 	if !isValidPassword {
-		return "", "", errors.New("PASSWORD IS INVALID")
+		return "", "", errors.New("password is invalid")
 	}
 
 	userId, err := s.repo.GetUserIdByEmail(u.Email)
@@ -94,21 +94,20 @@ func (s *AuthService) Login(u *models.User) (string, string, error) {
 }
 
 func (s *AuthService) GenNewAccessToken(refreshToken string) (string, error) {
-
 	// validate refresh token
 	if refreshToken == "" {
 
-		return "", errors.New("MISSING REFRESH TOKEN")
+		return "", errors.New("missing refresh token")
 	}
 	email, userId, err := utils.VerifyToken(refreshToken)
 	if err != nil {
-		return "", errors.New("REFRESH TOKEN IS INVALID: " + err.Error())
+		return "", errors.New("refresh token is invalid: " + err.Error())
 	}
 
 	// generate new access token
 	accessToken, err := utils.GenerateToken(email, userId, false)
 	if err != nil {
-		return "", errors.New("Generate access token failed: " + err.Error())
+		return "", errors.New("generate access token failed: " + err.Error())
 	}
 
 	return accessToken, nil

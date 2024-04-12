@@ -23,7 +23,7 @@ func (s *ParticipantService) JoinRoom(ctx *gin.Context, roomId int64) error {
 	userId := utils.GetUserId(ctx)
 	isExist := s.repo.CheckParticipantExist(roomId, userId)
 	if isExist {
-		return errors.New("User has joined room")
+		return errors.New("user has joined room")
 	}
 	return s.repo.JoinRoom(roomId, userId)
 }
