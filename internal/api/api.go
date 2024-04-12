@@ -30,6 +30,7 @@ func (a *API) initializeRoutes() {
 	fileHandler := handlers.NewFileHandler()
 	messageHandler := handlers.NewMessageHandler()
 	roomHandler := handlers.NewRoomHandler()
+	participantHandler := handlers.NewParticipantHandler()
 
 	apiV1 := a.engine.Group("/api/v1/")
 	{
@@ -66,6 +67,8 @@ func (a *API) initializeRoutes() {
 	{
 		apiRoomV1.GET("/get-by-user", roomHandler.GetByUser)
 		apiRoomV1.POST("/create", roomHandler.Create)
+		apiRoomV1.POST("/join", participantHandler.JoinRoom)
+		apiRoomV1.GET("/get-participant", participantHandler.GetAllParticipantInRoom)
 	}
 
 }

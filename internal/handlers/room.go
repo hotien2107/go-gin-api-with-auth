@@ -31,7 +31,7 @@ func (h *RoomHandler) GetByUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, models.Response{
-		IsError: true,
+		IsError: false,
 		Message: "Successfully fetched user's rooms",
 		Result:  rooms,
 	})
