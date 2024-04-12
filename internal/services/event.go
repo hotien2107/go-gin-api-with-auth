@@ -10,7 +10,6 @@ type EventService struct {
 }
 
 func NewEventService() *EventService {
-	// Initialize and return a new UserService instance
 	return &EventService{
 		repo: repository.NewEventRepository(),
 	}

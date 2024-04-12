@@ -15,6 +15,23 @@ func NewParticipantRepository() *ParticipantRepository {
 	}
 }
 
+func (r *ParticipantRepository) CheckParticipantExist(roomId int64, userId int64) bool {
+	query := `
+		SELECT p.id FROM  participants p
+		WHERE p.userId = $1 AND p.roomId = $2;
+	`
+
+	var id int64
+	err := r.DB.QueryRow(query, userId, roomId).Scan(&id)
+	if err != nil {
+		return false
+	}
+	if id != 0 {
+		return true
+	}
+	return false
+}
+
 func (r *ParticipantRepository) JoinRoom(roomId int64, userId int64) error {
 	query := `
 		INSERT INTO participants (roomId, userId)

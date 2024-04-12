@@ -16,7 +16,7 @@ func GenerateToken(email string, userId int64, isRefreshToken bool) (string, err
 	if isRefreshToken {
 		expiredTime = time.Now().Add(time.Hour * 8760).Unix() // 1 year
 	} else {
-		expiredTime = time.Now().Add(time.Hour).Unix() // 1 hour
+		expiredTime = time.Now().Add(time.Hour * 5).Unix() // 5 hour
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{

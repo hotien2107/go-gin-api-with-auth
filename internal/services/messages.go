@@ -17,7 +17,6 @@ type MessageService struct {
 }
 
 func NewMessageService() *MessageService {
-	// Initialize and return a new UserService instance
 	return &MessageService{
 		repo: repository.NewMessageRepository(),
 	}
@@ -34,7 +33,7 @@ func (s *MessageService) GetAlls(ctx *gin.Context) ([]models.Message, error) {
 }
 func (s *MessageService) Send(ctx *gin.Context, messInfo *models.Message) error {
 	// validate input data
-	if messInfo.ConversationId == 0 {
+	if messInfo.RoomId == 0 {
 		return errors.New("NO CONVERSATION YET")
 	}
 

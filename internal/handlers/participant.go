@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"gin-rest-api.com/basic/internal/models"
@@ -18,10 +20,32 @@ func NewParticipantHandler() *ParticipantHandler {
 	}
 }
 
-func (h *ParticipantHandler) JoinRoom(ctx *gin.Context) {
-	roomId := ctx.GetInt64("roomIdId")
+type roomRequest struct {
+	RoomId int64 `json:"roomId"`
+}
 
-	err := h.services.JoinRoom(ctx, roomId)
+func (h *ParticipantHandler) JoinRoom(ctx *gin.Context) {
+	var joinRoomReq roomRequest
+	err := ctx.ShouldBindJSON(&joinRoomReq)
+
+	if err != nil {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsError: true,
+			Message: err.Error(),
+			Result:  nil,
+		})
+		return
+	}
+	if joinRoomReq.RoomId == 0 {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsError: true,
+			Message: errors.New("Invalid Room ID: " + fmt.Sprintf("%d", joinRoomReq.RoomId)).Error(),
+			Result:  nil,
+		})
+		return
+	}
+
+	err = h.services.JoinRoom(ctx, joinRoomReq.RoomId)
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsError: true,
@@ -39,9 +63,18 @@ func (h *ParticipantHandler) JoinRoom(ctx *gin.Context) {
 }
 
 func (h *ParticipantHandler) GetAllParticipantInRoom(ctx *gin.Context) {
-	roomId := ctx.GetInt64("roomIdId")
+	var roomReq roomRequest
+	err := ctx.ShouldBindJSON(&roomReq)
+	if err != nil {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsError: true,
+			Message: err.Error(),
+			Result:  nil,
+		})
+		return
+	}
 
-	participants, err := h.services.GetAllParticipantInRoom(roomId)
+	participants, err := h.services.GetAllParticipantInRoom(roomReq.RoomId)
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsError: true,

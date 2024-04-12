@@ -12,12 +12,12 @@ var MESSAGE_STATUS map[string]string = map[string]string{
 }
 
 type Message struct {
-	ID             primitive.ObjectID `json:"id" bson:"_id"`
-	ConversationId int64              `json:"conversationId" bson:"conversation_id" binding:"required"`
-	SenderId       int64              `json:"senderId" bson:"sender_id"`
-	Content        string             `json:"content" bson:"content" binding:"required"`
-	Type           string             `json:"type" bson:"type"`
-	Status         string             `json:"status" bson:"status"`
-	CreatedAt      time.Time          `json:"createAt" bson:"created_at"`
-	UpdatedAt      time.Time          `json:"updatedAt" bson:"updated_at"`
+	ID        primitive.ObjectID `json:"id" bson:"_id"`
+	RoomId    int64              `json:"roomId" bson:"room_id" binding:"required"`
+	SenderId  int64              `json:"senderId" bson:"sender_id"`
+	Content   string             `json:"content" bson:"content" binding:"required"`
+	Type      string             `json:"type" bson:"type"`
+	Status    string             `json:"status" bson:"status"`
+	CreatedAt time.Time          `json:"createAt" bson:"created_at"`
+	UpdatedAt time.Time          `json:"updatedAt" bson:"updated_at"`
 }

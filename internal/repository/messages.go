@@ -5,24 +5,27 @@ import (
 	"log"
 
 	"gin-rest-api.com/basic/internal/db/mongodb"
+	"gin-rest-api.com/basic/internal/db/postgres"
 	"gin-rest-api.com/basic/internal/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 type MessageRepository struct {
-	*mongodb.MongoDB
+	mongo *mongodb.MongoDB
+	pgsl  *postgres.PsqlDB
 }
 
 func NewMessageRepository() *MessageRepository {
 	return &MessageRepository{
-		mongodb.NewMongoDB(),
+		mongo: mongodb.NewMongoDB(),
+		pgsl:  postgres.NewPsqlDB(),
 	}
 }
 
 func (r *MessageRepository) GetAll(ctx *gin.Context, senderId int64) ([]models.Message, error) {
 	var allMess []models.Message
-	cur, err := r.DB.Collection("messages").Find(ctx, bson.M{"sender_id": senderId})
+	cur, err := r.mongo.DB.Collection("messages").Find(ctx, bson.M{"sender_id": senderId})
 	if err != nil {
 		return []models.Message{}, errors.New(err.Error())
 	}
@@ -42,7 +45,7 @@ func (r *MessageRepository) GetAll(ctx *gin.Context, senderId int64) ([]models.M
 }
 
 func (r *MessageRepository) Send(ctx *gin.Context, messInfo *models.Message) error {
-	_, err := r.DB.Collection("messages").InsertOne(ctx, messInfo)
+	_, err := r.mongo.DB.Collection("messages").InsertOne(ctx, messInfo)
 	if err != nil {
 		return errors.New(err.Error())
 	}
