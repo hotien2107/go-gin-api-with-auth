@@ -3,6 +3,7 @@ package api
 import (
 	"gin-rest-api.com/basic/internal/handlers"
 	"gin-rest-api.com/basic/internal/middlewares"
+	"gin-rest-api.com/basic/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -71,4 +72,6 @@ func (a *API) initializeRoutes() {
 		apiRoomV1.GET("/get-participant", participantHandler.GetAllParticipantInRoom)
 	}
 
+	socketServer := services.NewSocketServer()
+	a.engine.GET("/ws", socketServer.HandlerWS)
 }
