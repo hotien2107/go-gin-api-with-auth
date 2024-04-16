@@ -33,6 +33,7 @@ func (a *API) initializeRoutes() {
 	roomHandler := handlers.NewRoomHandler()
 	participantHandler := handlers.NewParticipantHandler()
 
+	a.engine.Use(middlewares.CORS)
 	apiV1 := a.engine.Group("/api/v1/")
 	{
 		apiV1.POST("/sign-up", authHandler.SignUp)

@@ -10,15 +10,13 @@ import (
 )
 
 type SocketServer struct {
-	conns     map[*websocket.Conn]bool
-	broadcast chan []byte
-	upgrader  websocket.Upgrader
+	conns    map[*websocket.Conn]bool
+	upgrader websocket.Upgrader
 }
 
 func NewSocketServer() *SocketServer {
 	return &SocketServer{
-		conns:     make(map[*websocket.Conn]bool),
-		broadcast: make(chan []byte),
+		conns: make(map[*websocket.Conn]bool),
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -52,7 +50,17 @@ func (s *SocketServer) readLoop(ws *websocket.Conn) {
 			fmt.Println("Read error: ", err)
 			continue
 		}
-		fmt.Println(string(msg))
-		ws.WriteMessage(messType, []byte("Thanks for the msg: "+string(msg)))
+		fmt.Println(ws.RemoteAddr().String() + " send message: " + string(msg))
+		s.broadcast(messType, msg)
+	}
+}
+
+func (s *SocketServer) broadcast(msgType int, b []byte) {
+	for ws := range s.conns {
+		go func() {
+			if err := ws.WriteMessage(msgType, b); err != nil {
+				fmt.Println("Write error: ", err)
+			}
+		}()
 	}
 }

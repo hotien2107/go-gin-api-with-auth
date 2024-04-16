@@ -28,6 +28,14 @@ func (s *RoomService) GetByUser(ctx *gin.Context) (*[]models.Room, error) {
 	return rooms, nil
 }
 
+func (s *RoomService) GetById(roomId int64) (*models.Room, error) {
+	room, err := s.repo.GetById(roomId)
+	if err != nil {
+		return nil, err
+	}
+	return room, nil
+}
+
 func (s *RoomService) Create(ctx *gin.Context, room *models.Room) (int64, error) {
 	room.CreatedUser = utils.GetUserId(ctx)
 	if utils.IsEmpty(room.Name) {

@@ -45,6 +45,22 @@ func (r *RoomRepository) GetByUser(userId int64) (*[]models.Room, error) {
 
 }
 
+func (r *RoomRepository) GetById(roomId int64) (*models.Room, error) {
+	//query string
+	query := `
+		SELECT * FROM rooms
+		WHERE id= $1
+	`
+
+	var room models.Room
+	err := r.DB.QueryRow(query, roomId).Scan(&room)
+	if err != nil {
+		return &models.Room{}, err
+	}
+
+	return &room, nil
+}
+
 func (r *RoomRepository) Create(room *models.Room) (int64, error) {
 	//query string
 	query := `
